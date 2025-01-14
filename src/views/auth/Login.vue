@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import axiosInstance from "@/lib/axios";
+import { AxiosError } from "axios";
 import { reactive } from "vue";
 
 interface LoginForm {
@@ -12,15 +13,24 @@ const form = reactive<LoginForm>({
   password: "",
 });
 
+const errors = reactive({
+  email: [],
+  password: [],
+});
+
 const login = async (payload: LoginForm) => {
   await axiosInstance.get("/sanctum/csrf-cookie", {
     baseURL: "http://localhost:8000",
   });
+  errors.email = [];
+  errors.password = [];
   try {
-    const response = await axiosInstance.post("/login", payload);
-    console.log(response.data);
-  } catch (error) {
-    console.error(error);
+    await axiosInstance.post("/login", payload);
+  } catch (e) {
+    if (e instanceof AxiosError && e.response?.status === 422) {
+      errors.email = e.response.data.errors.email;
+      errors.password = e.response.data.errors.password;
+    }
   }
 };
 </script>
@@ -44,6 +54,15 @@ const login = async (payload: LoginForm) => {
         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         placeholder="name@flowbite.com"
       />
+      <template v-if="errors.email?.length">
+        <span
+          v-for="error in errors.email"
+          :key="error"
+          class="text-red-500 text-xs italic"
+        >
+          {{ error }}
+        </span>
+      </template>
     </div>
     <div class="mb-5">
       <label
@@ -57,6 +76,15 @@ const login = async (payload: LoginForm) => {
         v-model="form.password"
         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
       />
+      <template v-if="errors.password?.length">
+        <span
+          v-for="error in errors.password"
+          :key="error"
+          class="text-red-500 text-xs italic"
+        >
+          {{ error }}
+        </span>
+      </template>
     </div>
     <button
       type="submit"

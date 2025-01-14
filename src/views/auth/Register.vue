@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import axiosInstance from "@/lib/axios";
+import { AxiosError } from "axios";
 import { reactive } from "vue";
 
 interface RegisterForm {
@@ -16,15 +17,29 @@ const form = reactive<RegisterForm>({
   password_confirmation: "",
 });
 
+const errors = reactive({
+  name: [],
+  email: [],
+  password: [],
+});
+
 const register = async (payload: RegisterForm) => {
   await axiosInstance.get("/sanctum/csrf-cookie", {
     baseURL: "http://localhost:8000",
   });
+
+  errors.name = [];
+  errors.email = [];
+  errors.password = [];
+
   try {
-    const response = await axiosInstance.post("/register", payload);
-    console.log(response.data);
-  } catch (error) {
-    console.error(error);
+    await axiosInstance.post("/register", payload);
+  } catch (e) {
+    if (e instanceof AxiosError && e.response?.status === 422) {
+      errors.name = e.response.data.errors.name;
+      errors.email = e.response.data.errors.email;
+      errors.password = e.response.data.errors.password;
+    }
   }
 };
 </script>
@@ -48,6 +63,15 @@ const register = async (payload: RegisterForm) => {
         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         placeholder="name"
       />
+      <template v-if="errors.name?.length">
+        <span
+          v-for="error in errors.name"
+          :key="error"
+          class="text-red-500 text-xs italic"
+        >
+          {{ error }}
+        </span>
+      </template>
     </div>
     <div class="mb-5">
       <label
@@ -62,6 +86,15 @@ const register = async (payload: RegisterForm) => {
         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         placeholder="name@flowbite.com"
       />
+      <template v-if="errors.email?.length">
+        <span
+          v-for="error in errors.email"
+          :key="error"
+          class="text-red-500 text-xs italic"
+        >
+          {{ error }}
+        </span>
+      </template>
     </div>
     <div class="mb-5">
       <label
@@ -75,6 +108,15 @@ const register = async (payload: RegisterForm) => {
         v-model="form.password"
         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
       />
+      <template v-if="errors.password?.length">
+        <span
+          v-for="error in errors.password"
+          :key="error"
+          class="text-red-500 text-xs italic"
+        >
+          {{ error }}
+        </span>
+      </template>
     </div>
     <div class="mb-5">
       <label

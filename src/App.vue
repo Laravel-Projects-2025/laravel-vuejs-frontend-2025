@@ -6,7 +6,12 @@ import { RouterLink, RouterView } from "vue-router";
   <header>
     <div class="dark:bg-slate-950 bg-slate-700">
       <nav class="container mx-auto flex items-center justify-between p-4">
-        <RouterLink class="text-slate-200" to="/">Home</RouterLink>
+        <div class="flex space-x-2">
+          <RouterLink class="text-slate-200" to="/">Home</RouterLink>
+          <RouterLink class="text-slate-200" to="/dashboard"
+            >Dashboard</RouterLink
+          >
+        </div>
         <div class="flex space-x-2">
           <RouterLink class="text-slate-200" to="/login">Login</RouterLink>
           <RouterLink class="text-slate-200" to="/register"
