@@ -2,11 +2,8 @@
 import axiosInstance from "@/lib/axios";
 import type { FormKitNode } from "@formkit/core";
 import { AxiosError } from "axios";
-
-interface LoginForm {
-  email: string;
-  password: string;
-}
+import type { LoginForm } from "@/types";
+import router from "@/router";
 
 const login = async (payload: LoginForm, node?: FormKitNode) => {
   await axiosInstance.get("/sanctum/csrf-cookie", {
@@ -14,6 +11,7 @@ const login = async (payload: LoginForm, node?: FormKitNode) => {
   });
   try {
     await axiosInstance.post("/login", payload);
+    router.push("/dashboard");
   } catch (e) {
     if (e instanceof AxiosError && e.response?.status === 422) {
       node?.setErrors([], e.response?.data.errors);
@@ -23,7 +21,7 @@ const login = async (payload: LoginForm, node?: FormKitNode) => {
 </script>
 <template>
   <h1 class="text-3xl text-slate-200 p-4">Login</h1>
-  <div class="max-w-md mx-auto bg-slate-950 rounded-lg p-4">
+  <div class="max-w-[24em] mx-auto bg-slate-950 rounded-lg p-4">
     <FormKit type="form" submit-label="Login" @submit="login">
       <FormKit type="email" label="Email" name="email" />
       <FormKit type="password" label="Password" name="password" />

@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import axiosInstance from "@/lib/axios";
+import type { User } from "@/types";
 import { ref } from "vue";
 
-const user = ref({
-  name: "",
-  email: "",
-});
+const user = ref<User | null>(null);
 
 const getUser = async () => {
   try {
@@ -19,10 +17,7 @@ const getUser = async () => {
 const logout = async () => {
   try {
     await axiosInstance.post("/logout");
-    user.value = {
-      name: "",
-      email: "",
-    };
+    user.value = null;
   } catch (error) {
     console.error(error);
   }
