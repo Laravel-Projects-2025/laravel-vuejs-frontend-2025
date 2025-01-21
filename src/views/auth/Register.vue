@@ -1,24 +1,7 @@
 <script setup lang="ts">
-import axiosInstance from "@/lib/axios";
-import type { FormKitNode } from "@formkit/core";
-import { AxiosError } from "axios";
-import type { RegisterForm } from "@/types";
-import router from "@/router";
+import { useAuthStore } from "@/store/auth";
 
-const register = async (payload: RegisterForm, node?: FormKitNode) => {
-  await axiosInstance.get("/sanctum/csrf-cookie", {
-    baseURL: "http://localhost:8000",
-  });
-
-  try {
-    await axiosInstance.post("/register", payload);
-    router.push("/dashboard");
-  } catch (e) {
-    if (e instanceof AxiosError && e.response?.status === 422) {
-      node?.setErrors([], e.response?.data.errors);
-    }
-  }
-};
+const { register } = useAuthStore();
 </script>
 <template>
   <h1 class="text-3xl text-neutral-700 dark:text-neutral-300 p-4">Register</h1>
