@@ -11,6 +11,9 @@ import { RouterLink, RouterView } from "vue-router";
           <RouterLink class="text-slate-200" to="/dashboard"
             >Dashboard</RouterLink
           >
+          <RouterLink class="text-slate-200" to="/dashboard/posts"
+            >Posts</RouterLink
+          >
         </div>
         <div class="flex space-x-2">
           <RouterLink class="text-slate-200" to="/login">Login</RouterLink>
