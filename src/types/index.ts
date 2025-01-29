@@ -15,3 +15,12 @@ export interface User {
   name: string;
   email: string;
 }
+
+export type Post = {
+  id: number;
+  title: string;
+  slug: string;
+  published: boolean;
+  body: string;
+  createdAt: string;
+}

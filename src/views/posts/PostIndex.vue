@@ -2,14 +2,8 @@
 import {onMounted, ref} from "vue";
 import axiosInstance from "@/lib/axios.ts";
 import { TailwindPagination } from 'laravel-vue-pagination';
-type Post = {
-  id: number;
-  title: string;
-  slug: string;
-  published: boolean;
-  body: string;
-  createdAt: string;
-}
+import { EyeIcon, PencilSquareIcon} from "@heroicons/vue/24/solid";
+import type { Post } from "@/types";
 
 type LaravelData = {
   data: Post[];
@@ -67,7 +61,16 @@ onMounted(async  () => {
               <td class="px-6 py-4">{{ post.slug}}</td>
               <td class="px-6 py-4">{{ post.published}}</td>
               <td class="px-6 py-4">{{ post.createdAt}}</td>
-              <td class="px-6 py-4">Edit/Delete</td>
+              <td class="px-6 py-4">
+                <div class="flex space-x-4">
+                  <RouterLink :to="{ name: 'PostView', params: { slug: post.slug } }">
+                    <EyeIcon class="w-5 h-5 text-blue-500 dark:text-blue-400 hover:text-blue-700" />
+                  </RouterLink>
+                  <RouterLink :to="{ name: 'PostEdit', params: { slug: post.slug } }">
+                    <PencilSquareIcon class="w-5 h-5 text-green-500 dark:text-green-400 hover:text-green-700" />
+                  </RouterLink>
+                </div>
+              </td>
             </tr>
           </template>
         </tbody>
