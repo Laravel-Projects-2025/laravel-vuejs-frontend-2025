@@ -1,30 +1,20 @@
 <script setup lang="ts">
 import { useRoute} from "vue-router";
 import {ref, watch} from "vue";
-import axiosInstance from "@/lib/axios.ts";
-import type {Post} from "@/types";
+import { usePostStore} from "@/store/post.ts";
 
 const route = useRoute();
-const post = ref<Post | null>(null)
-
-const getPost = async (slug: string) => {
-  try {
-    const {data} = await axiosInstance.get(`/dashboard/posts/${slug}`);
-    post.value = data.data;
-  } catch (error){
-    console.error(error);
-  }
-}
+const postStore = usePostStore();
 
 watch(() => route.params.slug,
-  (slug) => getPost(String(slug)), {immediate: true})
+  (slug) => postStore.getPost(String(slug)), {immediate: true})
 </script>
 <template>
  <section>
-   <h1 class="text-3xl text-slate-200 p-4">{{ post?.title}}</h1>
-   <span class="text-sm text-slate-200 p-4">Created at: {{ post?.createdAt }}</span>
+   <h1 class="text-3xl text-slate-200 p-4">{{ postStore.post?.title}}</h1>
+   <span class="text-sm text-slate-200 p-4">Created at: {{ postStore.post?.createdAt }}</span>
    <div class="max-w-[24em] mx-auto bg-slate-950 rounded-lg p-4">
-     {{ post?.body }}
+     {{ postStore.post?.body }}
    </div>
  </section>
 </template>
