@@ -59,6 +59,24 @@ export const usePostStore = defineStore(
        }
    }
 
+   const deletePost = async (page: number, slug: string) => {
+       isLoading.value = true;
+       try {
+           await axiosInstance.delete(`/dashboard/posts/${slug}`);
+           await getPosts(page);
+       } catch (e) {
+           console.error(e);
+       } finally {
+           isLoading.value = false;
+       }
+   }
+
+   const cleanState = () => {
+       postsCollection.value = null;
+       post.value = null;
+       isLoading.value = false;
+   }
+
    return {
       postsCollection,
       post,
@@ -67,6 +85,8 @@ export const usePostStore = defineStore(
        getPost,
        createPost,
        updatePost,
+       deletePost,
+       cleanState,
     }
   },
   {
